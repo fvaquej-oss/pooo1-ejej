@@ -1084,4 +1084,7 @@ if __name__ == "__main__":
 
     # Ex 20
     ap = AnalizadorPatrones()
-    print("Ej 20 - Agrupadas por longitud:", ap.agrupar_por_longitud("el gato está aquí"))
+    print("Ej 20 - Agrupadas por longitud:", ap.agrupar_por_longitud("el gato está aquí")) 
+
+
+
