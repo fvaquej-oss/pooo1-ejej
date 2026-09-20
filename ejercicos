@@ -1,0 +1,1087 @@
+import math
+
+# ==============================================================================
+# EJERCICIO 1 - VALIDADOR DE NOTAS CON PROMEDIO
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Notas individuales o en lotes (*args).
+# PROCESO:
+#   Validar cada nota (0 <= nota <= 100), almacenar en lista interna y calcular el promedio.
+# SALIDA:
+#   Booleano, lista de notas válidas y el promedio.
+# EJEMPLO DE ENTRADA:
+#   c = Calificador()
+#   c.cargar_notas(85, 92, 110, 78, -5, 88)
+#   c.promedio()
+# SALIDA ESPERADA:
+#   [85, 92, 78, 88]
+#   85.75
+
+# 2. BOSQUEJO
+#   - Crear clase Calificador con atributo self.notas = []
+#   - validar_nota(nota): retorna 0 <= nota <= 100
+#   - cargar_notas(*args): itera sobre args, valida y guarda las validas en self.notas
+#   - promedio(): calcula suma / cantidad (si hay elementos)
+
+# 3. PATRÓN
+#   Programación Orientada a Objetos (POO) con acumuladores en listas y filtrado condicional.
+
+# 4. CÓDIGO
+class Calificador:
+    def __init__(self):
+        self.notas = []
+
+    def validar_nota(self, nota):
+        return 0 <= nota <= 100
+
+    def cargar_notas(self, *args):
+        for nota in args:
+            if self.validar_nota(nota):
+                self.notas.append(nota)
+        return self.notas
+
+    def promedio(self):
+        if not self.notas:
+            return 0.0
+        return sum(self.notas) / len(self.notas)
+
+# 5. PRUEBA
+# c = Calificador()
+# c.cargar_notas(85, 92, 110, 78, -5, 88) -> [85, 92, 78, 88] (110 y -5 descartados)
+# c.promedio() -> 343 / 4 = 85.75
+
+
+# ==============================================================================
+# EJERCICIO 2 - CONTADOR DE PALABRAS ÚNICAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Palabras individuales o en lotes (*args).
+# PROCESO:
+#   Guardar palabras en un conjunto (para unicidad) y en una lista (para orden).
+# SALIDA:
+#   Cantidad de palabras únicas.
+# EJEMPLO DE ENTRADA:
+#   at = AnalizadorTexto()
+#   at.agregar_multiples("hola", "mundo", "hola")
+#   at.contar_palabras()
+# SALIDA ESPERADA:
+#   2
+
+# 2. BOSQUEJO
+#   - AnalizadorTexto con self.conjunto = set() y self.lista = []
+#   - agregar_palabra(palabra): agrega a lista y a conjunto
+#   - agregar_multiples(*args): llama a agregar_palabra por cada una
+#   - contar_palabras(): retorna len(self.conjunto)
+
+# 3. PATRÓN
+#   Uso simultáneo de listas para preservación de orden y conjuntos para búsquedas y unicidad O(1).
+
+# 4. CÓDIGO
+class AnalizadorTexto:
+    def __init__(self):
+        self.conjunto_palabras = set()
+        self.lista_palabras = []
+
+    def agregar_palabra(self, palabra):
+        self.lista_palabras.append(palabra)
+        self.conjunto_palabras.add(palabra)
+
+    def contar_palabras(self):
+        return len(self.conjunto_palabras)
+
+    def agregar_multiples(self, *args):
+        for palabra in args:
+            self.agregar_palabra(palabra)
+
+# 5. PRUEBA
+# at = AnalizadorTexto()
+# at.agregar_multiples("hola", "mundo", "hola")
+# conjunto_palabras -> {"hola", "mundo"}
+# contar_palabras() -> 2
+
+
+# ==============================================================================
+# EJERCICIO 3 - GESTOR DE COMPRAS CON TOTALES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombre de artículos y precios.
+# PROCESO:
+#   Almacenar artículos en un diccionario {nombre: precio}, calcular total y filtrar por rango de precio.
+# SALIDA:
+#   Total del carrito y lista de artículos en el rango especificado.
+# EJEMPLO DE ENTRADA:
+#   c = CarroCompras()
+#   c.agregar_articulo("pan", 2.50)
+#   c.agregar_articulo("leche", 3.00)
+#   c.total_carrito()
+# SALIDA ESPERADA:
+#   5.50
+
+# 2. BOSQUEJO
+#   - self.carrito = {}
+#   - agregar_articulo(nombre, precio): self.carrito[nombre] = precio
+#   - total_carrito(): sum(self.carrito.values())
+#   - articulos_por_rango(min, max): lista por comprensión filtrando por valores
+
+# 3. PATRÓN
+#   Mapeo Clave-Valor mediante Diccionarios y filtrado por comprensión de listas.
+
+# 4. CÓDIGO
+class CarroCompras:
+    def __init__(self):
+        self.carrito = {}
+
+    def agregar_articulo(self, nombre, precio):
+        self.carrito[nombre] = precio
+
+    def total_carrito(self):
+        return sum(self.carrito.values())
+
+    def articulos_por_rango(self, precio_min, precio_max):
+        return [nombre for nombre, precio in self.carrito.items() if precio_min <= precio <= precio_max]
+
+# 5. PRUEBA
+# c = CarroCompras()
+# c.agregar_articulo("pan", 2.50)
+# c.agregar_articulo("leche", 3.00)
+# c.total_carrito() -> 2.50 + 3.00 = 5.50
+
+
+# ==============================================================================
+# EJERCICIO 4 - INVERSOR DE SECUENCIAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Una lista o múltiples listas (*listas).
+# PROCESO:
+#   Invertir una lista mediante bucle manual sin usar reversed() ni slicing [::-1].
+# SALIDA:
+#   Lista invertida o diccionario {tupla(original): lista_invertida}.
+# EJEMPLO DE ENTRADA:
+#   inv = InversorSecuencia()
+#   inv.invertir_lista([1, 2, 3])
+# SALIDA ESPERADA:
+#   [3, 2, 1]
+
+# 2. BOSQUEJO
+#   - invertir_lista(lista): iterar desde len(lista)-1 hasta 0 agregando a una nueva lista.
+#   - invertir_multiples(*listas): retorne diccionario mapeando la tupla de la lista original a la invertida.
+
+# 3. PATRÓN
+#   Recorrido manual indexado inverso y uso de tuplas como claves inmutables en diccionarios.
+
+# 4. CÓDIGO
+class InversorSecuencia:
+    def invertir_lista(self, lista):
+        invertida = []
+        for i in range(len(lista) - 1, -1, -1):
+            invertida.append(lista[i])
+        return invertida
+
+    def invertir_multiples(self, *listas):
+        resultado = {}
+        for l in listas:
+            resultado[tuple(l)] = self.invertir_lista(l)
+        return resultado
+
+# 5. PRUEBA
+# inv = InversorSecuencia()
+# inv.invertir_lista([1, 2, 3]) -> range(2, -1, -1) -> agrega 3, luego 2, luego 1 -> [3, 2, 1]
+
+
+# ==============================================================================
+# EJERCICIO 5 - DETECTOR DE NÚMEROS PARES E IMPARES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Números en lote (*numeros).
+# PROCESO:
+#   Verificar si un número es par con %. Clasificar en diccionario {'pares': [...], 'impares': [...]}.
+# SALIDA:
+#   Diccionario con listas clasificadas y tupla con cantidades (cant_pares, cant_impares).
+# EJEMPLO DE ENTRADA:
+#   an = AnalizadorNumeros()
+#   an.separar(1, 2, 3, 4, 5)
+# SALIDA ESPERADA:
+#   {'pares': [2, 4], 'impares': [1, 3, 5]}
+
+# 2. BOSQUEJO
+#   - es_par(n): return n % 2 == 0
+#   - separar(*numeros): itera y clasifica según es_par
+#   - cantidad_pares_impares(): retorna (len(pares), len(impares))
+
+# 3. PATRÓN
+#   Clasificación en estructuras anidadas (diccionario de listas) usando evaluadores booleanos.
+
+# 4. CÓDIGO
+class AnalizadorNumeros:
+    def __init__(self):
+        self.ultimo_analisis = {'pares': [], 'impares': []}
+
+    def es_par(self, numero):
+        return numero % 2 == 0
+
+    def separar(self, *numeros):
+        pares = []
+        impares = []
+        for n in numeros:
+            if self.es_par(n):
+                pares.append(n)
+            else:
+                impares.append(n)
+        self.ultimo_analisis = {'pares': pares, 'impares': impares}
+        return self.ultimo_analisis
+
+    def cantidad_pares_impares(self):
+        return (len(self.ultimo_analisis['pares']), len(self.ultimo_analisis['impares']))
+
+# 5. PRUEBA
+# an = AnalizadorNumeros()
+# an.separar(1, 2, 3, 4, 5) -> 1: imp, 2: par, 3: imp, 4: par, 5: imp -> {'pares':[2,4], 'impares':[1,3,5]}
+
+
+# ==============================================================================
+# EJERCICIO 6 - ESTADÍSTICAS DE TEMPERATURA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Temperaturas individuales o en lote (*temps).
+# PROCESO:
+#   Guardar en lista y obtener estadística básica: mínima, máxima y promedio.
+# SALIDA:
+#   Valores numéricos estadísticos.
+# EJEMPLO DE ENTRADA:
+#   gt = GestorTemperatura()
+#   gt.registrar_multiples(20, 25, 18, 30)
+#   gt.promedio()
+# SALIDA ESPERADA:
+#   23.25
+
+# 2. BOSQUEJO
+#   - self.temperaturas = []
+#   - registrar_temperatura(temp): append
+#   - registrar_multiples(*temps): llamar a registrar_temperatura
+#   - minima(), maxima(), promedio(): usar min(), max(), sum()/len()
+
+# 3. PATRÓN
+#   Acumulación en lista y agregación de datos mediante funciones integradas (built-in).
+
+# 4. CÓDIGO
+class GestorTemperatura:
+    def __init__(self):
+        self.temperaturas = []
+
+    def registrar_temperatura(self, temp):
+        self.temperaturas.append(temp)
+
+    def registrar_multiples(self, *temps):
+        for t in temps:
+            self.registrar_temperatura(t)
+
+    def minima(self):
+        return min(self.temperaturas) if self.temperaturas else None
+
+    def maxima(self):
+        return max(self.temperaturas) if self.temperaturas else None
+
+    def promedio(self):
+        return sum(self.temperaturas) / len(self.temperaturas) if self.temperaturas else 0.0
+
+# 5. PRUEBA
+# gt = GestorTemperatura()
+# gt.registrar_multiples(20, 25, 18, 30) -> suma=93, count=4 -> promedio = 93/4 = 23.25
+
+
+# ==============================================================================
+# EJERCICIO 7 - MAPEADOR DE EDADES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombres y edades.
+# PROCESO:
+#   Guardar en diccionario {nombre: edad}, filtrar nombres por edad >= min y promediar edades.
+# SALIDA:
+#   Lista de nombres filtrados y float con edad promedio.
+# EJEMPLO DE ENTRADA:
+#   gp = GestorPersonas()
+#   gp.agregar_persona("Ana", 28)
+#   gp.agregar_persona("Bob", 17)
+#   gp.personas_mayores(18)
+# SALIDA ESPERADA:
+#   ["Ana"]
+
+# 2. BOSQUEJO
+#   - self.personas = {}
+#   - agregar_persona(nombre, edad): asigna clave-valor
+#   - personas_mayores(edad_minima): lista por comprensión sobre items()
+#   - edad_promedio(): suma de valores / total personas
+
+# 3. PATRÓN
+#   Filtrado de diccionarios iterando sobre pares .items().
+
+# 4. CÓDIGO
+class GestorPersonas:
+    def __init__(self):
+        self.personas = {}
+
+    def agregar_persona(self, nombre, edad):
+        self.personas[nombre] = edad
+
+    def personas_mayores(self, edad_minima):
+        return [nombre for nombre, edad in self.personas.items() if edad >= edad_minima]
+
+    def edad_promedio(self):
+        if not self.personas:
+            return 0.0
+        return sum(self.personas.values()) / len(self.personas)
+
+# 5. PRUEBA
+# gp = GestorPersonas()
+# gp.agregar_persona("Ana", 28); gp.agregar_persona("Bob", 17)
+# gp.personas_mayores(18) -> 28 >= 18 ("Ana"), 17 < 18 (Descartado) -> ["Ana"]
+
+
+# ==============================================================================
+# EJERCICIO 8 - ASIGNADOR DE EQUIPOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombres de equipos y de jugadores.
+# PROCESO:
+#   Crear diccionario {equipo: [jugadores]}. Agregar integrantes a las listas y comparar longitudes.
+# SALIDA:
+#   Nombre del equipo con mayor cantidad de integrantes.
+# EJEMPLO DE ENTRADA:
+#   eq = Equipos()
+#   eq.crear_equipo("A")
+#   eq.agregar_jugador("A", "Juan")
+#   eq.agregar_jugador("A", "Pedro")
+
+# 2. BOSQUEJO
+#   - self.equipos = {}
+#   - crear_equipo(nombre): self.equipos[nombre] = []
+#   - agregar_jugador(equipo, jugador): append a la lista del equipo existente
+#   - equipo_mayor_integrantes(): max() usando key=lambda e: len(self.equipos[e])
+
+# 3. PATRÓN
+#   Estructura de datos anidada (Diccionario de Listas) y búsqueda de máximo por propiedad.
+
+# 4. CÓDIGO
+class Equipos:
+    def __init__(self):
+        self.equipos = {}
+
+    def crear_equipo(self, nombre_equipo):
+        if nombre_equipo not in self.equipos:
+            self.equipos[nombre_equipo] = []
+
+    def agregar_jugador(self, equipo, jugador):
+        if equipo in self.equipos:
+            self.equipos[equipo].append(jugador)
+
+    def equipo_mayor_integrantes(self):
+        if not self.equipos:
+            return None
+        return max(self.equipos, key=lambda e: len(self.equipos[e]))
+
+# 5. PRUEBA
+# eq = Equipos()
+# eq.crear_equipo("A"); eq.agregar_jugador("A","Juan"); eq.agregar_jugador("A","Pedro")
+# eq.crear_equipo("B"); eq.agregar_jugador("B","Maria")
+# eq.equipo_mayor_integrantes() -> len("A")=2, len("B")=1 -> "A"
+
+
+# ==============================================================================
+# EJERCICIO 9 - VALIDADOR DE CARACTERES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Cadenas de texto.
+# PROCESO:
+#   Evaluar si un carácter es vocal. Clasificar caracteres de un texto en vocales, consonantes y dígitos.
+#   Mantener registro del texto más largo procesado.
+# SALIDA:
+#   Diccionario con conteos por tipo.
+# EJEMPLO DE ENTRADA:
+#   astr = AnalizadorString()
+#   astr.contar_por_tipo("Hola123")
+# SALIDA ESPERADA:
+#   {'vocales': 2, 'consonantes': 2, 'digitos': 3}
+
+# 2. BOSQUEJO
+#   - self.texto_mas_largo = ""
+#   - solo_vocales(letra): vocal en 'aeiouAEIOU'
+#   - contar_por_tipo(texto): iterar char por char. Usar isdigit(), solo_vocales() e isalpha().
+
+# 3. PATRÓN
+#   Análisis de cadenas con acumuladores de categorías en diccionarios.
+
+# 4. CÓDIGO
+class AnalizadorString:
+    def __init__(self):
+        self.texto_mas_largo = ""
+
+    def solo_vocales(self, letra):
+        return letra.lower() in 'aeiou' and len(letra) == 1
+
+    def contar_por_tipo(self, texto):
+        if len(texto) > len(self.texto_mas_largo):
+            self.texto_mas_largo = texto
+
+        conteos = {'vocales': 0, 'consonantes': 0, 'digitos': 0}
+        for char in texto:
+            if char.isdigit():
+                conteos['digitos'] += 1
+            elif char.isalpha():
+                if self.solo_vocales(char):
+                    conteos['vocales'] += 1
+                else:
+                    conteos['consonantes'] += 1
+        return conteos
+
+# 5. PRUEBA
+# astr = AnalizadorString()
+# astr.contar_por_tipo("Hola123") -> H(c), o(v), l(c), a(v), 1(d), 2(d), 3(d) -> v:2, c:2, d:3
+
+
+# ==============================================================================
+# EJERCICIO 10 - GESTOR DE TAREAS CON PRIORIDAD
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Descripción de la tarea y su prioridad ("alta", "media", "baja").
+# PROCESO:
+#   Almacenar tareas como tuplas (descripción, prioridad) en una lista.
+# SALIDA:
+#   Lista de tuplas filtrada por prioridad alta, o modificación de la lista al eliminar.
+# EJEMPLO DE ENTRADA:
+#   t = Tareas()
+#   t.agregar_tarea("Estudiar", "alta")
+#   t.agregar_tarea("Leer", "baja")
+#   t.tareas_prioritarias()
+# SALIDA ESPERADA:
+#   [("Estudiar", "alta")]
+
+# 2. BOSQUEJO
+#   - self.lista_tareas = []
+#   - agregar_tarea(desc, prioridad): append((desc, prioridad))
+#   - tareas_prioritarias(): [t for t in lista if t[1] == "alta"]
+#   - eliminar_completada(desc): recrear lista o remove() por coincidencia de desc.
+
+# 3. PATRÓN
+#   Lista de tuplas (inmutables por registro) con filtrado y eliminación por atributo.
+
+# 4. CÓDIGO
+class Tareas:
+    def __init__(self):
+        self.lista_tareas = []
+
+    def agregar_tarea(self, descripcion, prioridad):
+        self.lista_tareas.append((descripcion, prioridad))
+
+    def tareas_prioritarias(self):
+        return [t for t in self.lista_tareas if t[1].lower() == "alta"]
+
+    def eliminar_completada(self, descripcion):
+        self.lista_tareas = [t for t in self.lista_tareas if t[0] != descripcion]
+
+# 5. PRUEBA
+# t = Tareas()
+# t.agregar_tarea("Estudiar", "alta"); t.agregar_tarea("Leer", "baja")
+# t.tareas_prioritarias() -> [("Estudiar", "alta")]
+
+
+# ==============================================================================
+# EJERCICIO 11 - CONTADOR DE FRECUENCIA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Elementos individuales o en lote.
+# PROCESO:
+#   Contar frecuencias de cada elemento usando un diccionario como contador.
+# SALIDA:
+#   Elemento más frecuente y su conteo específico.
+# EJEMPLO DE ENTRADA:
+#   cf = ContadorFrecuencia()
+#   cf.agregar_elemento("a")
+#   cf.agregar_elemento("b")
+#   cf.agregar_elemento("a")
+#   cf.elemento_mas_frecuente()
+# SALIDA ESPERADA:
+#   "a"
+
+# 2. BOSQUEJO
+#   - self.frecuencias = {}
+#   - agregar_elemento(elem): dict[elem] = dict.get(elem, 0) + 1
+#   - elemento_mas_frecuente(): max(self.frecuencias, key=self.frecuencias.get)
+#   - frecuencia_elemento(elem): return dict.get(elem, 0)
+
+# 3. PATRÓN
+#   Diccionario como tabla de frecuencias (Hash Map pattern).
+
+# 4. CÓDIGO
+class ContadorFrecuencia:
+    def __init__(self):
+        self.frecuencias = {}
+
+    def agregar_elemento(self, elemento):
+        self.frecuencias[elemento] = self.frecuencias.get(elemento, 0) + 1
+
+    def elemento_mas_frecuente(self):
+        if not self.frecuencias:
+            return None
+        return max(self.frecuencias, key=self.frecuencias.get)
+
+    def frecuencia_elemento(self, elemento):
+        return self.frecuencias.get(elemento, 0)
+
+# 5. PRUEBA
+# cf = ContadorFrecuencia()
+# cf.agregar_elemento("a"); cf.agregar_elemento("b"); cf.agregar_elemento("a")
+# frecs -> {"a": 2, "b": 1} -> mas_frecuente() -> "a"
+
+
+# ==============================================================================
+# EJERCICIO 12 - SELECTOR DE RANGO CON TUPLAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Pares (inicio, fin) que definen rangos numéricos.
+# PROCESO:
+#   Generar una tupla para cada rango. Combinar múltiples rangos eliminando duplicados mediante un conjunto.
+# SALIDA:
+#   Lista de elementos únicos pertenecientes a los rangos.
+# EJEMPLO DE ENTRADA:
+#   sr = SelectorRango()
+#   sr.elementos_en_multiples_rangos((1, 3), (2, 4))
+# SALIDA ESPERADA:
+#   [1, 2, 3, 4]
+
+# 2. BOSQUEJO
+#   - crear_rango(inicio, fin): tuple(range(inicio, fin + 1))
+#   - elementos_en_multiples_rangos(*rangos): conjunto vacio, iterar rangos, iterar elementos, agregar a set, retornar list.
+
+# 3. PATRÓN
+#   Generación de tuplas inmutables y unificación de conjuntos para eliminación de duplicados.
+
+# 4. CÓDIGO
+class SelectorRango:
+    def crear_rango(self, inicio, fin):
+        return tuple(range(inicio, fin + 1))
+
+    def elementos_en_multiples_rangos(self, *rangos):
+        unicos = set()
+        for r in rangos:
+            rango_tupla = self.crear_rango(r[0], r[1])
+            unicos.update(rango_tupla)
+        return sorted(list(unicos))
+
+# 5. PRUEBA
+# sr = SelectorRango()
+# sr.elementos_en_multiples_rangos((1,3), (2,4))
+# (1,3) -> (1,2,3); (2,4) -> (2,3,4) -> unicos -> {1, 2, 3, 4}
+
+
+# ==============================================================================
+# EJERCICIO 13 - COMBINADOR DE LISTAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Dos o más listas de elementos.
+# PROCESO:
+#   Intercalar elementos ordenadamente toma posición por posición de las listas recibidas.
+# SALIDA:
+#   Lista combinada intercalada.
+# EJEMPLO DE ENTRADA:
+#   cl = CombinadorListas()
+#   cl.intercalar([1, 2], [3, 4])
+# SALIDA ESPERADA:
+#   [1, 3, 2, 4]
+
+# 2. BOSQUEJO
+#   - intercalar(lista1, lista2): iterar con i en max(len1, len2) y agregar si i < len.
+#   - intercalar_multiples(*listas): iterar hasta el max len de todas las listas.
+
+# 3. PATRÓN
+#   Indexación manual paralela sobre listas de distintas longitudes.
+
+# 4. CÓDIGO
+class CombinadorListas:
+    def intercalar(self, lista1, lista2):
+        resultado = []
+        max_len = max(len(lista1), len(lista2))
+        for i in range(max_len):
+            if i < len(lista1):
+                resultado.append(lista1[i])
+            if i < len(lista2):
+                resultado.append(lista2[i])
+        return resultado
+
+    def intercalar_multiples(self, *listas):
+        if not listas:
+            return []
+        resultado = []
+        max_len = max(len(l) for l in listas)
+        for i in range(max_len):
+            for l in listas:
+                if i < len(l):
+                    resultado.append(l[i])
+        return resultado
+
+# 5. PRUEBA
+# cl = CombinadorListas()
+# cl.intercalar([1, 2], [3, 4]) -> i=0: 1, 3 | i=1: 2, 4 -> [1, 3, 2, 4]
+
+
+# ==============================================================================
+# EJERCICIO 14 - MAPEO DE ESTUDIANTES A NOTAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Par estudiante (str) -> nota (float/int).
+# PROCESO:
+#   Guardar en diccionario, filtrar aprobados (nota >= nota_minima) y obtener el estudiante con la máxima nota.
+# SALIDA:
+#   Lista de nombres de aprobados y tupla (nombre, nota) del mejor estudiante.
+# EJEMPLO DE ENTRADA:
+#   rn = RegistroNotas()
+#   rn.registrar("Ana", 95)
+#   rn.registrar("Bob", 70)
+#   rn.mejor_estudiante()
+# SALIDA ESPERADA:
+#   ("Ana", 95)
+
+# 2. BOSQUEJO
+#   - self.registro = {}
+#   - registrar(est, nota): self.registro[est] = nota
+#   - estudiantes_aprobados(minima): [est for est, n in self.registro.items() if n >= minima]
+#   - mejor_estudiante(): max sobre items() usando la nota como clave de comparación.
+
+# 3. PATRÓN
+#   Uso de .items() para iteración simultánea de Clave-Valor y ordenación por valor.
+
+# 4. CÓDIGO
+class RegistroNotas:
+    def __init__(self):
+        self.registro = {}
+
+    def registrar(self, estudiante, nota):
+        self.registro[estudiante] = nota
+
+    def estudiantes_aprobados(self, nota_minima):
+        return [est for est, nota in self.registro.items() if nota >= nota_minima]
+
+    def mejor_estudiante(self):
+        if not self.registro:
+            return None
+        mejor = max(self.registro.items(), key=lambda x: x[1])
+        return mejor
+
+# 5. PRUEBA
+# rn = RegistroNotas()
+# rn.registrar("Ana", 95); rn.registrar("Bob", 70)
+# mejor_estudiante() -> max(("Ana",95), ("Bob",70)) por nota -> ("Ana", 95)
+
+
+# ==============================================================================
+# EJERCICIO 15 - DIVISORES DE UN NÚMERO
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Uno o varios números enteros.
+# PROCESO:
+#   Encontrar divisores con el operador de residuo %. Determinar si un número es perfecto (suma divisores propios == n).
+# SALIDA:
+#   Tupla de divisores, booleano de número perfecto y diccionario {numero: tupla_divisores}.
+# EJEMPLO DE ENTRADA:
+#   df = DivisorFinder()
+#   df.encontrar_divisores(12)
+# SALIDA ESPERADA:
+#   (1, 2, 3, 4, 6, 12)
+
+# 2. BOSQUEJO
+#   - encontrar_divisores(n): tuple(i for i in range(1, n+1) if n % i == 0)
+#   - es_perfecto(n): divisores_propios = divisores sin n. sum(propios) == n
+#   - encontrar_multiples_divisores(*numeros): dict {n: encontrar_divisores(n)}
+
+# 3. PATRÓN
+#   Cálculos matemáticos con comprensiones tupled y composición de métodos de clase.
+
+# 4. CÓDIGO
+class DivisorFinder:
+    def encontrar_divisores(self, numero):
+        if numero <= 0:
+            return ()
+        return tuple(i for i in range(1, numero + 1) if numero % i == 0)
+
+    def es_perfecto(self, numero):
+        if numero <= 1:
+            return False
+        divisores = self.encontrar_divisores(numero)
+        divisores_propios = divisores[:-1]  # Excluye el mismo número
+        return sum(divisores_propios) == numero
+
+    def encontrar_multiples_divisores(self, *numeros):
+        return {n: self.encontrar_divisores(n) for n in numeros}
+
+# 5. PRUEBA
+# df = DivisorFinder()
+# df.encontrar_divisores(12) -> 12 % i == 0 para i=1,2,3,4,6,12 -> (1, 2, 3, 4, 6, 12)
+
+
+# ==============================================================================
+# EJERCICIO 16 - CODIFICADOR / DECODIFICADOR CÉSAR
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Letra o palabra y valor de desplazamiento (1-25).
+# PROCESO:
+#   Desplazar caracteres usando códigos ASCII ord() y chr(). Guardar en diccionario el historial.
+# SALIDA:
+#   Palabra o letra codificada.
+# EJEMPLO DE ENTRADA:
+#   cc = CodificadorCesar()
+#   cc.codificar_palabra("hola", 3)
+# SALIDA ESPERADA:
+#   "kroc"
+
+# 2. BOSQUEJO
+#   - self.historial = {}
+#   - codificar_letra(letra, d): si es minúscula 'a'+(ord(c)-'a'+d)%26. Ídem mayúsculas.
+#   - codificar_palabra(palabra, d): une el resultado de codificar_letra y guarda en historial.
+
+# 3. PATRÓN
+#   Aritmética modular en ASCII e historial centralizado en diccionario.
+
+# 4. CÓDIGO
+class CodificadorCesar:
+    def __init__(self):
+        self.historial = {}
+
+    def codificar_letra(self, letra, desplazamiento):
+        if not letra.isalpha():
+            return letra
+        base = ord('a') if letra.islower() else ord('A')
+        nueva_pos = (ord(letra) - base + desplazamiento) % 26
+        return chr(base + nueva_pos)
+
+    def codificar_palabra(self, palabra, desplazamiento):
+        codificada = "".join(self.codificar_letra(c, desplazamiento) for c in palabra)
+        self.historial[palabra] = codificada
+        return codificada
+
+# 5. PRUEBA
+# cc = CodificadorCesar()
+# cc.codificar_palabra("hola", 3)
+# h -> k, o -> r, l -> o, a -> d => "krod" (Guardado en self.historial)
+
+
+# ==============================================================================
+# EJERCICIO 17 - GRUPO DE EDADES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Edades numéricas en lote.
+# PROCESO:
+#   Clasificar en: "niño" (<12), "adolescente" (12-17), "adulto" (18-64), "mayor" (>=65).
+#   Agrupar en diccionario y calcular promedio por categoría.
+# SALIDA:
+#   Diccionario agrupado y float promedio de la categoría.
+# EJEMPLO DE ENTRADA:
+#   ae = AgrupadorEdades()
+#   ae.agrupar_por_categoria(5, 15, 30, 70)
+# SALIDA ESPERADA:
+#   {'niño': [5], 'adolescente': [15], 'adulto': [30], 'mayor': [70]}
+
+# 2. BOSQUEJO
+#   - clasificar_edad(edad): bloque if/elif/else
+#   - agrupar_por_categoria(*edades): inicializa dict con listas vacías y distribuye.
+#   - edad_promedio_categoria(cat): calcula sum/len sobre la categoría.
+
+# 3. PATRÓN
+#   Agrupación por categorias en diccionarios anidados con listas.
+
+# 4. CÓDIGO
+class AgrupadorEdades:
+    def __init__(self):
+        self.grupos = {'niño': [], 'adolescente': [], 'adulto': [], 'mayor': []}
+
+    def clasificar_edad(self, edad):
+        if edad < 12:
+            return "niño"
+        elif edad <= 17:
+            return "adolescente"
+        elif edad <= 64:
+            return "adulto"
+        else:
+            return "mayor"
+
+    def agrupar_por_categoria(self, *edades):
+        self.grupos = {'niño': [], 'adolescente': [], 'adulto': [], 'mayor': []}
+        for e in edades:
+            cat = self.clasificar_edad(e)
+            self.grupos[cat].append(e)
+        return self.grupos
+
+    def edad_promedio_categoria(self, categoria):
+        edades = self.grupos.get(categoria, [])
+        return sum(edades) / len(edades) if edades else 0.0
+
+# 5. PRUEBA
+# ae = AgrupadorEdades()
+# ae.agrupar_por_categoria(5, 15, 30, 70) -> niño:[5], adolescente:[15], adulto:[30], mayor:[70]
+
+
+# ==============================================================================
+# EJERCICIO 18 - MATRIZ DE DISTANCIAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Tuplas de coordenadas (x, y).
+# PROCESO:
+#   Calcular distancia euclidiana: sqrt((x2-x1)^2 + (y2-y1)^2).
+#   Buscar el punto más cercano a un punto de referencia y guardar historial de distancias.
+# SALIDA:
+#   Distancia en float y tupla del punto más cercano.
+# EJEMPLO DE ENTRADA:
+#   cd = CalculadorDistancia()
+#   cd.distancia_euclidiana((0,0), (3,4))
+# SALIDA ESPERADA:
+#   5.0
+
+# 2. BOSQUEJO
+#   - self.historial_distancias = []
+#   - distancia_euclidiana(p1, p2): math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2)
+#   - punto_mas_cercano(ref, *puntos): min(puntos, key=lambda p: distancia(ref, p))
+
+# 3. PATRÓN
+#   Representación de datos espaciales mediante Tuplas 2D y búsqueda de mínimo.
+
+# 4. CÓDIGO
+class CalculadorDistancia:
+    def __init__(self):
+        self.historial_distancias = []
+
+    def distancia_euclidiana(self, p1, p2):
+        d = math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
+        self.historial_distancias.append(d)
+        return d
+
+    def punto_mas_cercano(self, referencia, *puntos):
+        if not puntos:
+            return None
+        return min(puntos, key=lambda p: self.distancia_euclidiana(referencia, p))
+
+# 5. PRUEBA
+# cd = CalculadorDistancia()
+# cd.distancia_euclidiana((0,0), (3,4)) -> sqrt((3-0)^2 + (4-0)^2) = sqrt(9+16) = 5.0
+
+
+# ==============================================================================
+# EJERCICIO 19 - INVENTARIO DE PRODUCTOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombre de producto y cantidades a sumar o restar.
+# PROCESO:
+#   Gestión de stock en diccionario {producto: cantidad}. Restar sólo si el stock es suficiente.
+# SALIDA:
+#   Booleano indicando éxito de la resta y lista de productos bajo un stock mínimo.
+# EJEMPLO DE ENTRADA:
+#   inv = Inventario()
+#   inv.agregar_stock("pan", 50)
+#   inv.restar_stock("pan", 30)
+#   inv.productos_bajo_stock(15)
+# SALIDA ESPERADA:
+#   True
+#   ["pan"]
+
+# 2. BOSQUEJO
+#   - self.stock = {}
+#   - agregar_stock(prod, cant): suma a la cantidad existente
+#   - restar_stock(prod, cant): valida que exista y stock >= cant. Descuenta y retorna True, si no False.
+#   - productos_bajo_stock(minimo): retorna lista de prods con stock < minimo
+
+# 3. PATRÓN
+#   Mantenimiento de estado e integridad de datos en diccionarios.
+
+# 4. CÓDIGO
+class Inventario:
+    def __init__(self):
+        self.stock = {}
+
+    def agregar_stock(self, producto, cantidad):
+        self.stock[producto] = self.stock.get(producto, 0) + cantidad
+
+    def restar_stock(self, producto, cantidad):
+        if producto in self.stock and self.stock[producto] >= cantidad:
+            self.stock[producto] -= cantidad
+            return True
+        return False
+
+    def productos_bajo_stock(self, minimo):
+        return [prod for prod, cant in self.stock.items() if cant < minimo]
+
+# 5. PRUEBA
+# inv = Inventario()
+# inv.agregar_stock("pan", 50) -> stock["pan"] = 50
+# inv.restar_stock("pan", 30) -> 50 >= 30 (True), stock["pan"] = 20
+# inv.productos_bajo_stock(15) -> 20 no es < 15 -> []
+
+
+# ==============================================================================
+# EJERCICIO 20 - ANALIZADOR DE PATRONES EN TEXTOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Cadenas de texto y patrón de búsqueda.
+# PROCESO:
+#   Dividir texto en palabras, encontrar coincidencias por prefijo, agrupar por longitud y extraer palabras únicas.
+# SALIDA:
+#   Listas filtradas, diccionario {longitud: [palabras]} y conjunto de palabras únicas.
+# EJEMPLO DE ENTRADA:
+#   ap = AnalizadorPatrones()
+#   ap.agrupar_por_longitud("el gato está aquí")
+# SALIDA ESPERADA:
+#   {2: ['el'], 4: ['gato'], 5: ['está', 'aquí']}
+
+# 2. BOSQUEJO
+#   - encontrar_palabras(texto, patron): usa split() y startswith()
+#   - agrupar_por_longitud(texto): mapea len(p) -> lista de palabras
+#   - palabras_unicas(texto): retorna set(texto.split())
+
+# 3. PATRÓN
+#   Combinación avanzada de colecciones (Lista, Conjunto, Diccionario) y manipulación de Strings.
+
+# 4. CÓDIGO
+class AnalizadorPatrones:
+    def encontrar_palabras(self, texto, patron):
+        palabras = texto.split()
+        return [p for p in palabras if p.startswith(patron)]
+
+    def agrupar_por_longitud(self, texto):
+        palabras = texto.split()
+        agrupadas = {}
+        for p in palabras:
+            longitud = len(p)
+            if longitud not in agrupadas:
+                agrupadas[longitud] = []
+            agrupadas[longitud].append(p)
+        return agrupadas
+
+    def palabras_unicas(self, texto):
+        return set(texto.split())
+
+# 5. PRUEBA
+# ap = AnalizadorPatrones()
+# ap.agrupar_por_longitud("el gato está aquí")
+# "el"(2), "gato"(4), "está"(5), "aquí"(5) -> {2: ['el'], 4: ['gato'], 5: ['está', 'aquí']}
+
+
+# ==============================================================================
+# SECCIÓN DE PRUEBAS GENERALES DE EJECUCIÓN
+# ==============================================================================
+if __name__ == "__main__":
+    print("--- EJECUTANDO PRUEBAS DE LOS 20 EJERCICIOS ---")
+    
+    # Ex 1
+    c = Calificador()
+    c.cargar_notas(85, 92, 110, 78, -5, 88)
+    print("Ej 1 - Promedio:", c.promedio())
+    
+    # Ex 2
+    at = AnalizadorTexto()
+    at.agregar_multiples("hola", "mundo", "hola")
+    print("Ej 2 - Palabras únicas:", at.contar_palabras())
+
+    # Ex 3
+    carro = CarroCompras()
+    carro.agregar_articulo("pan", 2.50)
+    carro.agregar_articulo("leche", 3.00)
+    print("Ej 3 - Total carrito:", carro.total_carrito())
+
+    # Ex 4
+    inv = InversorSecuencia()
+    print("Ej 4 - Lista invertida:", inv.invertir_lista([1, 2, 3]))
+
+    # Ex 5
+    an = AnalizadorNumeros()
+    print("Ej 5 - Separación:", an.separar(1, 2, 3, 4, 5))
+
+    # Ex 6
+    gt = GestorTemperatura()
+    gt.registrar_multiples(20, 25, 18, 30)
+    print("Ej 6 - Promedio Temp:", gt.promedio())
+
+    # Ex 7
+    gp = GestorPersonas()
+    gp.agregar_persona("Ana", 28)
+    gp.agregar_persona("Bob", 17)
+    print("Ej 7 - Mayores de edad:", gp.personas_mayores(18))
+
+    # Ex 8
+    eq = Equipos()
+    eq.crear_equipo("A")
+    eq.agregar_jugador("A", "Juan")
+    eq.agregar_jugador("A", "Pedro")
+    print("Ej 8 - Mayor equipo:", eq.equipo_mayor_integrantes())
+
+    # Ex 9
+    astr = AnalizadorString()
+    print("Ej 9 - Conteo por tipo:", astr.contar_por_tipo("Hola123"))
+
+    # Ex 10
+    t = Tareas()
+    t.agregar_tarea("Estudiar", "alta")
+    t.agregar_tarea("Leer", "baja")
+    print("Ej 10 - Prioritarias:", t.tareas_prioritarias())
+
+    # Ex 11
+    cf = ContadorFrecuencia()
+    cf.agregar_elemento("a")
+    cf.agregar_elemento("b")
+    cf.agregar_elemento("a")
+    print("Ej 11 - Mas frecuente:", cf.elemento_mas_frecuente())
+
+    # Ex 12
+    sr = SelectorRango()
+    print("Ej 12 - Elementos combinados:", sr.elementos_en_multiples_rangos((1, 3), (2, 4)))
+
+    # Ex 13
+    cl = CombinadorListas()
+    print("Ej 13 - Intercalar:", cl.intercalar([1, 2], [3, 4]))
+
+    # Ex 14
+    rn = RegistroNotas()
+    rn.registrar("Ana", 95)
+    rn.registrar("Bob", 70)
+    print("Ej 14 - Mejor estudiante:", rn.mejor_estudiante())
+
+    # Ex 15
+    df = DivisorFinder()
+    print("Ej 15 - Divisores de 12:", df.encontrar_divisores(12))
+
+    # Ex 16
+    cc = CodificadorCesar()
+    print("Ej 16 - Codificado 'hola' +3:", cc.codificar_palabra("hola", 3))
+
+    # Ex 17
+    ae = AgrupadorEdades()
+    print("Ej 17 - Grupos:", ae.agrupar_por_categoria(5, 15, 30, 70))
+
+    # Ex 18
+    cd = CalculadorDistancia()
+    print("Ej 18 - Distancia:", cd.distancia_euclidiana((0, 0), (3, 4)))
+
+    # Ex 19
+    inv_prod = Inventario()
+    inv_prod.agregar_stock("pan", 50)
+    inv_prod.restar_stock("pan", 35)
+    print("Ej 19 - Bajo stock (<20):", inv_prod.productos_bajo_stock(20))
+
+    # Ex 20
+    ap = AnalizadorPatrones()
+    print("Ej 20 - Agrupadas por longitud:", ap.agrupar_por_longitud("el gato está aquí"))
