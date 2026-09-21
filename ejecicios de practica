@@ -1,0 +1,1143 @@
+import math
+
+# ==============================================================================
+# EJERCICIO 1 - VALIDADOR DE CONTRASEÑAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Contraseñas individuales o en lotes (*claves).
+# PROCESO:
+#   Validar que tenga al menos 8 caracteres, una mayúscula y un dígito.
+# SALIDA:
+#   Booleano, lista de contraseñas seguras y su cantidad.
+# EJEMPLO DE ENTRADA:
+#   v = ValidadorContrasenas()
+#   v.evaluar_multiples("Python123", "abc", "CLAVE2026")
+# SALIDA ESPERADA:
+#   ["Python123", "CLAVE2026"]
+
+# 2. BOSQUEJO
+#   - self.seguras = []
+#   - es_segura(clave): recorre caracteres marcando banderas de mayúscula y dígito
+#   - evaluar_multiples(*claves): filtra y guarda las seguras
+#   - cantidad_seguras(): len(self.seguras)
+
+# 3. PATRÓN
+#   Validación con banderas booleanas (flags) y acumulación filtrada en listas.
+
+# 4. CÓDIGO
+class ValidadorContrasenas:
+    def __init__(self):
+        self.seguras = []
+
+    def es_segura(self, clave):
+        if len(clave) < 8:
+            return False
+        tiene_mayuscula = False
+        tiene_digito = False
+        for caracter in clave:
+            if caracter.isupper():
+                tiene_mayuscula = True
+            elif caracter.isdigit():
+                tiene_digito = True
+        return tiene_mayuscula and tiene_digito
+
+    def evaluar_multiples(self, *claves):
+        for clave in claves:
+            if self.es_segura(clave):
+                self.seguras.append(clave)
+        return self.seguras
+
+    def cantidad_seguras(self):
+        return len(self.seguras)
+
+# 5. PRUEBA
+# v = ValidadorContrasenas()
+# "Python123" -> 9 caracteres, 'P' mayúscula, '1' dígito -> True
+# "abc" -> menos de 8 caracteres -> False
+# "CLAVE2026" -> 9 caracteres, mayúsculas, dígitos -> True -> ["Python123", "CLAVE2026"]
+
+
+# ==============================================================================
+# EJERCICIO 2 - CONTROL DE ASISTENCIA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombres de estudiantes que marcan asistencia.
+# PROCESO:
+#   Guardar cada marca en una lista (historial) y en un conjunto (asistentes únicos).
+# SALIDA:
+#   Cantidad de estudiantes únicos y porcentaje de asistencia del curso.
+# EJEMPLO DE ENTRADA:
+#   ca = ControlAsistencia()
+#   ca.marcar_multiples("Ana", "Luis", "Ana")
+#   ca.total_unicos()
+# SALIDA ESPERADA:
+#   2
+
+# 2. BOSQUEJO
+#   - self.presentes = set() y self.registros = []
+#   - marcar(estudiante): agrega a ambas estructuras
+#   - marcar_multiples(*estudiantes): llama a marcar por cada uno
+#   - porcentaje_asistencia(total_curso): (unicos / total) * 100
+
+# 3. PATRÓN
+#   Conjunto para unicidad e historial paralelo en lista, con cálculo porcentual.
+
+# 4. CÓDIGO
+class ControlAsistencia:
+    def __init__(self):
+        self.presentes = set()
+        self.registros = []
+
+    def marcar(self, estudiante):
+        self.registros.append(estudiante)
+        self.presentes.add(estudiante)
+
+    def marcar_multiples(self, *estudiantes):
+        for estudiante in estudiantes:
+            self.marcar(estudiante)
+        return self.presentes
+
+    def total_unicos(self):
+        return len(self.presentes)
+
+    def porcentaje_asistencia(self, total_curso):
+        if total_curso <= 0:
+            return 0.0
+        return (len(self.presentes) / total_curso) * 100
+
+# 5. PRUEBA
+# ca = ControlAsistencia()
+# ca.marcar_multiples("Ana", "Luis", "Ana") -> registros=3, presentes={"Ana","Luis"}
+# ca.total_unicos() -> 2 ; ca.porcentaje_asistencia(4) -> 50.0
+
+
+# ==============================================================================
+# EJERCICIO 3 - CONVERSOR DE MONEDAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Moneda destino, tasa de cambio y montos a convertir.
+# PROCESO:
+#   Guardar tasas en un diccionario {moneda: tasa} y multiplicar el monto por la tasa.
+# SALIDA:
+#   Monto convertido e historial de conversiones como tuplas.
+# EJEMPLO DE ENTRADA:
+#   cm = ConversorMonedas()
+#   cm.registrar_tasa("EUR", 0.92)
+#   cm.convertir(100, "EUR")
+# SALIDA ESPERADA:
+#   92.0
+
+# 2. BOSQUEJO
+#   - self.tasas = {} y self.historial = []
+#   - registrar_tasa(moneda, tasa): asigna clave-valor
+#   - convertir(monto, moneda): valida existencia, multiplica y guarda tupla
+#   - convertir_multiples(moneda, *montos): lista con cada conversión
+
+# 3. PATRÓN
+#   Tabla de consulta (lookup table) en diccionario con registro histórico en tuplas.
+
+# 4. CÓDIGO
+class ConversorMonedas:
+    def __init__(self):
+        self.tasas = {}
+        self.historial = []
+
+    def registrar_tasa(self, moneda, tasa):
+        self.tasas[moneda] = tasa
+
+    def convertir(self, monto, moneda):
+        if moneda not in self.tasas:
+            return None
+        resultado = monto * self.tasas[moneda]
+        self.historial.append((moneda, monto, resultado))
+        return resultado
+
+    def convertir_multiples(self, moneda, *montos):
+        return [self.convertir(m, moneda) for m in montos]
+
+# 5. PRUEBA
+# cm = ConversorMonedas()
+# cm.registrar_tasa("EUR", 0.92) -> tasas = {"EUR": 0.92}
+# cm.convertir(100, "EUR") -> 100 * 0.92 = 92.0 (historial: ("EUR", 100, 92.0))
+
+
+# ==============================================================================
+# EJERCICIO 4 - REGISTRO DE VENTAS POR PRODUCTO
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombre del producto y cantidad vendida.
+# PROCESO:
+#   Acumular las ventas de cada producto en un diccionario de listas {producto: [cantidades]}.
+# SALIDA:
+#   Total vendido por producto y nombre del producto más vendido.
+# EJEMPLO DE ENTRADA:
+#   rv = RegistroVentas()
+#   rv.registrar_venta("pan", 10)
+#   rv.registrar_venta("pan", 5)
+#   rv.registrar_venta("leche", 8)
+#   rv.producto_mas_vendido()
+# SALIDA ESPERADA:
+#   "pan"
+
+# 2. BOSQUEJO
+#   - self.ventas = {}
+#   - registrar_venta(producto, cantidad): crea lista si no existe y hace append
+#   - total_producto(producto): sum de su lista
+#   - producto_mas_vendido(): max() con key=suma de la lista
+
+# 3. PATRÓN
+#   Diccionario de listas (agrupación) y búsqueda de máximo por valor calculado.
+
+# 4. CÓDIGO
+class RegistroVentas:
+    def __init__(self):
+        self.ventas = {}
+
+    def registrar_venta(self, producto, cantidad):
+        if producto not in self.ventas:
+            self.ventas[producto] = []
+        self.ventas[producto].append(cantidad)
+
+    def total_producto(self, producto):
+        return sum(self.ventas.get(producto, []))
+
+    def producto_mas_vendido(self):
+        if not self.ventas:
+            return None
+        return max(self.ventas, key=lambda p: sum(self.ventas[p]))
+
+# 5. PRUEBA
+# rv = RegistroVentas()
+# ventas -> {"pan": [10, 5], "leche": [8]}
+# total "pan" = 15, total "leche" = 8 -> producto_mas_vendido() -> "pan"
+
+
+# ==============================================================================
+# EJERCICIO 5 - FILTRADOR DE NÚMEROS PRIMOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Números enteros en lote (*numeros).
+# PROCESO:
+#   Verificar primalidad probando divisores hasta la raíz cuadrada del número.
+# SALIDA:
+#   Lista de primos y diccionario {numero: booleano}.
+# EJEMPLO DE ENTRADA:
+#   fp = FiltradorPrimos()
+#   fp.filtrar_primos(2, 4, 7, 9, 11)
+# SALIDA ESPERADA:
+#   [2, 7, 11]
+
+# 2. BOSQUEJO
+#   - es_primo(n): n < 2 -> False; probar i en range(2, sqrt(n)+1)
+#   - filtrar_primos(*numeros): lista por comprensión con es_primo
+#   - clasificar(*numeros): diccionario por comprensión {n: es_primo(n)}
+
+# 3. PATRÓN
+#   Optimización matemática con raíz cuadrada y salida temprana (early return).
+
+# 4. CÓDIGO
+class FiltradorPrimos:
+    def es_primo(self, numero):
+        if numero < 2:
+            return False
+        for i in range(2, int(math.sqrt(numero)) + 1):
+            if numero % i == 0:
+                return False
+        return True
+
+    def filtrar_primos(self, *numeros):
+        return [n for n in numeros if self.es_primo(n)]
+
+    def clasificar(self, *numeros):
+        return {n: self.es_primo(n) for n in numeros}
+
+# 5. PRUEBA
+# fp = FiltradorPrimos()
+# 2 -> primo; 4 -> divisible por 2; 7 -> primo; 9 -> divisible por 3; 11 -> primo
+# fp.filtrar_primos(2, 4, 7, 9, 11) -> [2, 7, 11]
+
+
+# ==============================================================================
+# EJERCICIO 6 - CATÁLOGO DE BIBLIOTECA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Título, autor y año de publicación.
+# PROCESO:
+#   Guardar en diccionario {titulo: (autor, anio)} y filtrar por autor o por antigüedad.
+# SALIDA:
+#   Listas de títulos filtrados.
+# EJEMPLO DE ENTRADA:
+#   b = Biblioteca()
+#   b.agregar_libro("Rayuela", "Cortázar", 1963)
+#   b.agregar_libro("Bestiario", "Cortázar", 1951)
+#   b.libros_de_autor("Cortázar")
+# SALIDA ESPERADA:
+#   ["Rayuela", "Bestiario"]
+
+# 2. BOSQUEJO
+#   - self.libros = {}
+#   - agregar_libro(titulo, autor, anio): self.libros[titulo] = (autor, anio)
+#   - libros_de_autor(autor): comprensión con desempaquetado de la tupla
+#   - libros_anteriores_a(anio): comprensión comparando el segundo elemento
+
+# 3. PATRÓN
+#   Diccionario con valores de tipo tupla y desempaquetado en comprensiones.
+
+# 4. CÓDIGO
+class Biblioteca:
+    def __init__(self):
+        self.libros = {}
+
+    def agregar_libro(self, titulo, autor, anio):
+        self.libros[titulo] = (autor, anio)
+
+    def libros_de_autor(self, autor):
+        return [t for t, (a, anio) in self.libros.items() if a == autor]
+
+    def libros_anteriores_a(self, anio_limite):
+        return [t for t, (a, anio) in self.libros.items() if anio < anio_limite]
+
+# 5. PRUEBA
+# b = Biblioteca()
+# libros -> {"Rayuela": ("Cortázar", 1963), "Bestiario": ("Cortázar", 1951)}
+# libros_de_autor("Cortázar") -> ["Rayuela", "Bestiario"]
+# libros_anteriores_a(1960) -> ["Bestiario"]
+
+
+# ==============================================================================
+# EJERCICIO 7 - CALCULADORA DE FACTORIALES CON CACHÉ
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Uno o varios números enteros no negativos.
+# PROCESO:
+#   Calcular el factorial de forma iterativa y guardarlo en un diccionario para reutilizarlo.
+# SALIDA:
+#   Entero factorial y diccionario {numero: factorial}.
+# EJEMPLO DE ENTRADA:
+#   cf = CalculadoraFactorial()
+#   cf.factorial(5)
+# SALIDA ESPERADA:
+#   120
+
+# 2. BOSQUEJO
+#   - self.cache = {}
+#   - factorial(n): si está en caché lo retorna; si no, multiplica de 2 hasta n
+#   - factoriales_multiples(*numeros): diccionario por comprensión
+
+# 3. PATRÓN
+#   Memorización (caché) en diccionario y acumulador multiplicativo.
+
+# 4. CÓDIGO
+class CalculadoraFactorial:
+    def __init__(self):
+        self.cache = {}
+
+    def factorial(self, numero):
+        if numero < 0:
+            return None
+        if numero in self.cache:
+            return self.cache[numero]
+        resultado = 1
+        for i in range(2, numero + 1):
+            resultado *= i
+        self.cache[numero] = resultado
+        return resultado
+
+    def factoriales_multiples(self, *numeros):
+        return {n: self.factorial(n) for n in numeros}
+
+# 5. PRUEBA
+# cf = CalculadoraFactorial()
+# cf.factorial(5) -> 1*2=2, *3=6, *4=24, *5=120 -> 120 (guardado en cache[5])
+
+
+# ==============================================================================
+# EJERCICIO 8 - ANALIZADOR DE PALÍNDROMOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Palabras o frases en lote (*textos).
+# PROCESO:
+#   Comparar caracteres desde los extremos hacia el centro, sin usar slicing [::-1].
+# SALIDA:
+#   Booleano, lista de palíndromos y el más largo encontrado.
+# EJEMPLO DE ENTRADA:
+#   ap = AnalizadorPalindromos()
+#   ap.filtrar_palindromos("reconocer", "casa", "anilina")
+# SALIDA ESPERADA:
+#   ["reconocer", "anilina"]
+
+# 2. BOSQUEJO
+#   - self.encontrados = []
+#   - es_palindromo(texto): normaliza (minúsculas, sin espacios) y compara i con len-1-i
+#   - filtrar_palindromos(*textos): guarda los válidos
+#   - palindromo_mas_largo(): max() con key=len
+
+# 3. PATRÓN
+#   Recorrido con dos extremos (two pointers) y normalización de cadenas.
+
+# 4. CÓDIGO
+class AnalizadorPalindromos:
+    def __init__(self):
+        self.encontrados = []
+
+    def es_palindromo(self, texto):
+        limpio = texto.lower().replace(" ", "")
+        for i in range(len(limpio) // 2):
+            if limpio[i] != limpio[len(limpio) - 1 - i]:
+                return False
+        return True
+
+    def filtrar_palindromos(self, *textos):
+        for texto in textos:
+            if self.es_palindromo(texto):
+                self.encontrados.append(texto)
+        return self.encontrados
+
+    def palindromo_mas_largo(self):
+        if not self.encontrados:
+            return None
+        return max(self.encontrados, key=len)
+
+# 5. PRUEBA
+# ap = AnalizadorPalindromos()
+# "reconocer" -> r=r, e=e, c=c, o=o -> True
+# "casa" -> c != a -> False
+# "anilina" -> True -> ["reconocer", "anilina"]
+
+
+# ==============================================================================
+# EJERCICIO 9 - CONTROL DE GASTOS POR CATEGORÍA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Categoría del gasto y monto.
+# PROCESO:
+#   Guardar cada gasto como tupla en una lista y acumular totales por categoría en un diccionario.
+# SALIDA:
+#   Diccionario de totales y categoría con mayor gasto.
+# EJEMPLO DE ENTRADA:
+#   cg = ControlGastos()
+#   cg.registrar_gasto("comida", 20)
+#   cg.registrar_gasto("transporte", 5)
+#   cg.registrar_gasto("comida", 15)
+#   cg.total_por_categoria()
+# SALIDA ESPERADA:
+#   {'comida': 35, 'transporte': 5}
+
+# 2. BOSQUEJO
+#   - self.gastos = []
+#   - registrar_gasto(categoria, monto): append((categoria, monto))
+#   - total_por_categoria(): acumular con dict.get(cat, 0) + monto
+#   - categoria_mayor_gasto(): max() sobre el diccionario de totales
+
+# 3. PATRÓN
+#   Lista de tuplas como registro de transacciones y agregación en diccionario.
+
+# 4. CÓDIGO
+class ControlGastos:
+    def __init__(self):
+        self.gastos = []
+
+    def registrar_gasto(self, categoria, monto):
+        self.gastos.append((categoria, monto))
+
+    def total_por_categoria(self):
+        totales = {}
+        for categoria, monto in self.gastos:
+            totales[categoria] = totales.get(categoria, 0) + monto
+        return totales
+
+    def categoria_mayor_gasto(self):
+        totales = self.total_por_categoria()
+        if not totales:
+            return None
+        return max(totales, key=totales.get)
+
+# 5. PRUEBA
+# cg = ControlGastos()
+# gastos -> [("comida",20), ("transporte",5), ("comida",15)]
+# totales -> comida: 20+15 = 35, transporte: 5 -> mayor -> "comida"
+
+
+# ==============================================================================
+# EJERCICIO 10 - GENERADOR DE SIGLAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Frases de texto.
+# PROCESO:
+#   Dividir la frase en palabras y tomar la primera letra de cada una en mayúscula.
+# SALIDA:
+#   Cadena con la sigla y diccionario de historial {frase: sigla}.
+# EJEMPLO DE ENTRADA:
+#   gs = GeneradorSiglas()
+#   gs.generar_sigla("universidad estatal de milagro")
+# SALIDA ESPERADA:
+#   "UEDM"
+
+# 2. BOSQUEJO
+#   - self.historial = {}
+#   - generar_sigla(frase): split(), tomar p[0].upper() y unir con join
+#   - generar_multiples(*frases): diccionario por comprensión
+
+# 3. PATRÓN
+#   Segmentación de cadenas con split() y construcción por join().
+
+# 4. CÓDIGO
+class GeneradorSiglas:
+    def __init__(self):
+        self.historial = {}
+
+    def generar_sigla(self, frase):
+        sigla = "".join(palabra[0].upper() for palabra in frase.split())
+        self.historial[frase] = sigla
+        return sigla
+
+    def generar_multiples(self, *frases):
+        return {f: self.generar_sigla(f) for f in frases}
+
+# 5. PRUEBA
+# gs = GeneradorSiglas()
+# "universidad estatal de milagro" -> u, e, d, m -> "UEDM"
+
+
+# ==============================================================================
+# EJERCICIO 11 - GESTOR DE HORARIO SEMANAL
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Día de la semana y nombre de la materia.
+# PROCESO:
+#   Guardar en diccionario {dia: [materias]} y comparar longitudes de las listas.
+# SALIDA:
+#   Lista de materias del día y día con más clases.
+# EJEMPLO DE ENTRADA:
+#   gh = GestorHorario()
+#   gh.agregar_clase("lunes", "POO")
+#   gh.agregar_clase("lunes", "Base de Datos")
+#   gh.agregar_clase("martes", "Economía")
+#   gh.dia_mas_cargado()
+# SALIDA ESPERADA:
+#   "lunes"
+
+# 2. BOSQUEJO
+#   - self.horario = {}
+#   - agregar_clase(dia, materia): crear lista si no existe y hacer append
+#   - materias_del_dia(dia): get(dia, [])
+#   - dia_mas_cargado(): max() con key=len de la lista
+
+# 3. PATRÓN
+#   Diccionario de listas con creación perezosa de claves y comparación por longitud.
+
+# 4. CÓDIGO
+class GestorHorario:
+    def __init__(self):
+        self.horario = {}
+
+    def agregar_clase(self, dia, materia):
+        if dia not in self.horario:
+            self.horario[dia] = []
+        self.horario[dia].append(materia)
+
+    def materias_del_dia(self, dia):
+        return self.horario.get(dia, [])
+
+    def dia_mas_cargado(self):
+        if not self.horario:
+            return None
+        return max(self.horario, key=lambda d: len(self.horario[d]))
+
+# 5. PRUEBA
+# gh = GestorHorario()
+# horario -> {"lunes": ["POO", "Base de Datos"], "martes": ["Economía"]}
+# len(lunes)=2 > len(martes)=1 -> "lunes"
+
+
+# ==============================================================================
+# EJERCICIO 12 - CONVERSOR DE TEMPERATURAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Temperaturas en grados Celsius o Fahrenheit.
+# PROCESO:
+#   Aplicar las fórmulas F = C * 9/5 + 32 y C = (F - 32) * 5/9, guardando el historial.
+# SALIDA:
+#   Valor convertido y tupla con múltiples conversiones.
+# EJEMPLO DE ENTRADA:
+#   ct = ConversorTemperatura()
+#   ct.celsius_a_fahrenheit(25)
+# SALIDA ESPERADA:
+#   77.0
+
+# 2. BOSQUEJO
+#   - self.conversiones = []
+#   - celsius_a_fahrenheit(c): aplica fórmula y guarda tupla (c, f)
+#   - fahrenheit_a_celsius(f): fórmula inversa
+#   - convertir_multiples(*celsius): retorna tupla de resultados
+
+# 3. PATRÓN
+#   Aplicación de fórmulas con historial en lista de tuplas y salida inmutable.
+
+# 4. CÓDIGO
+class ConversorTemperatura:
+    def __init__(self):
+        self.conversiones = []
+
+    def celsius_a_fahrenheit(self, celsius):
+        fahrenheit = celsius * 9 / 5 + 32
+        self.conversiones.append((celsius, fahrenheit))
+        return fahrenheit
+
+    def fahrenheit_a_celsius(self, fahrenheit):
+        return (fahrenheit - 32) * 5 / 9
+
+    def convertir_multiples(self, *celsius):
+        return tuple(self.celsius_a_fahrenheit(c) for c in celsius)
+
+# 5. PRUEBA
+# ct = ConversorTemperatura()
+# 25 * 9/5 = 45.0 ; 45.0 + 32 = 77.0 -> 77.0
+
+
+# ==============================================================================
+# EJERCICIO 13 - ESTADÍSTICAS NUMÉRICAS (MEDIANA, MODA Y RANGO)
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Números en lote (*numeros).
+# PROCESO:
+#   Ordenar los datos para la mediana, contar frecuencias para la moda y restar extremos para el rango.
+# SALIDA:
+#   Valores estadísticos numéricos.
+# EJEMPLO DE ENTRADA:
+#   en = EstadisticasNumericas()
+#   en.cargar(4, 1, 7, 3)
+#   en.mediana()
+# SALIDA ESPERADA:
+#   3.5
+
+# 2. BOSQUEJO
+#   - self.datos = []
+#   - cargar(*numeros): extiende la lista
+#   - mediana(): ordenar; si n es impar tomar el central, si es par promediar los dos centrales
+#   - moda(): diccionario de frecuencias y max()
+#   - rango(): max() - min()
+
+# 3. PATRÓN
+#   Estadística descriptiva con ordenamiento y tabla de frecuencias.
+
+# 4. CÓDIGO
+class EstadisticasNumericas:
+    def __init__(self):
+        self.datos = []
+
+    def cargar(self, *numeros):
+        for n in numeros:
+            self.datos.append(n)
+        return self.datos
+
+    def mediana(self):
+        if not self.datos:
+            return None
+        ordenados = sorted(self.datos)
+        n = len(ordenados)
+        medio = n // 2
+        if n % 2 == 1:
+            return ordenados[medio]
+        return (ordenados[medio - 1] + ordenados[medio]) / 2
+
+    def moda(self):
+        if not self.datos:
+            return None
+        frecuencias = {}
+        for n in self.datos:
+            frecuencias[n] = frecuencias.get(n, 0) + 1
+        return max(frecuencias, key=frecuencias.get)
+
+    def rango(self):
+        if not self.datos:
+            return 0
+        return max(self.datos) - min(self.datos)
+
+# 5. PRUEBA
+# en = EstadisticasNumericas()
+# en.cargar(4, 1, 7, 3) -> ordenados = [1, 3, 4, 7], n = 4 (par)
+# mediana -> (3 + 4) / 2 = 3.5 ; rango -> 7 - 1 = 6
+
+
+# ==============================================================================
+# EJERCICIO 14 - REGISTRO DE MASCOTAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Nombre, especie y edad de la mascota.
+# PROCESO:
+#   Guardar en diccionario {nombre: (especie, edad)}, filtrar por especie y promediar edades.
+# SALIDA:
+#   Lista de nombres filtrados y float con la edad promedio.
+# EJEMPLO DE ENTRADA:
+#   rm = RegistroMascotas()
+#   rm.registrar("Rocky", "perro", 4)
+#   rm.registrar("Michi", "gato", 2)
+#   rm.por_especie("perro")
+# SALIDA ESPERADA:
+#   ["Rocky"]
+
+# 2. BOSQUEJO
+#   - self.mascotas = {}
+#   - registrar(nombre, especie, edad): asigna la tupla como valor
+#   - por_especie(especie): comprensión sobre items() comparando el primer elemento
+#   - edad_promedio(): suma de los segundos elementos / total
+
+# 3. PATRÓN
+#   Registros compuestos en tuplas indexadas dentro de un diccionario.
+
+# 4. CÓDIGO
+class RegistroMascotas:
+    def __init__(self):
+        self.mascotas = {}
+
+    def registrar(self, nombre, especie, edad):
+        self.mascotas[nombre] = (especie, edad)
+
+    def por_especie(self, especie):
+        return [n for n, datos in self.mascotas.items() if datos[0] == especie]
+
+    def edad_promedio(self):
+        if not self.mascotas:
+            return 0.0
+        return sum(datos[1] for datos in self.mascotas.values()) / len(self.mascotas)
+
+# 5. PRUEBA
+# rm = RegistroMascotas()
+# mascotas -> {"Rocky": ("perro", 4), "Michi": ("gato", 2)}
+# por_especie("perro") -> ["Rocky"] ; edad_promedio() -> (4+2)/2 = 3.0
+
+
+# ==============================================================================
+# EJERCICIO 15 - CONTADOR DE VOCALES POR PALABRA
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Palabras individuales o en lote (*palabras).
+# PROCESO:
+#   Contar las vocales de cada palabra y mapearlas en un diccionario.
+# SALIDA:
+#   Diccionario {palabra: cantidad} y palabra con más vocales.
+# EJEMPLO DE ENTRADA:
+#   cv = ContadorVocalesPalabra()
+#   cv.mapa_vocales("murcielago", "sol")
+# SALIDA ESPERADA:
+#   {'murcielago': 5, 'sol': 1}
+
+# 2. BOSQUEJO
+#   - contar_vocales(palabra): sum(1 for c in palabra.lower() if c in 'aeiou')
+#   - mapa_vocales(*palabras): diccionario por comprensión
+#   - palabra_con_mas_vocales(*palabras): max() con key=contar_vocales
+
+# 3. PATRÓN
+#   Método de clase usado como criterio de comparación (key) en funciones integradas.
+
+# 4. CÓDIGO
+class ContadorVocalesPalabra:
+    def contar_vocales(self, palabra):
+        return sum(1 for c in palabra.lower() if c in 'aeiou')
+
+    def mapa_vocales(self, *palabras):
+        return {p: self.contar_vocales(p) for p in palabras}
+
+    def palabra_con_mas_vocales(self, *palabras):
+        if not palabras:
+            return None
+        return max(palabras, key=self.contar_vocales)
+
+# 5. PRUEBA
+# cv = ContadorVocalesPalabra()
+# "murcielago" -> u, i, e, a, o = 5 ; "sol" -> o = 1
+# mapa_vocales(...) -> {'murcielago': 5, 'sol': 1}
+
+
+# ==============================================================================
+# EJERCICIO 16 - CALCULADORA DE MCD Y MCM
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Dos o más números enteros.
+# PROCESO:
+#   Aplicar el algoritmo de Euclides para el MCD y la relación MCM = (a * b) / MCD.
+# SALIDA:
+#   Enteros MCD y MCM.
+# EJEMPLO DE ENTRADA:
+#   cm = CalculadoraMcdMcm()
+#   cm.mcd(12, 18)
+#   cm.mcm(12, 18)
+# SALIDA ESPERADA:
+#   6
+#   36
+
+# 2. BOSQUEJO
+#   - mcd(a, b): while b != 0: a, b = b, a % b
+#   - mcm(a, b): abs(a*b) // mcd(a, b)
+#   - mcd_multiple(*numeros): aplicar mcd acumulativamente sobre la secuencia
+
+# 3. PATRÓN
+#   Algoritmo iterativo de Euclides y reducción acumulativa sobre varios valores.
+
+# 4. CÓDIGO
+class CalculadoraMcdMcm:
+    def mcd(self, a, b):
+        while b != 0:
+            a, b = b, a % b
+        return abs(a)
+
+    def mcm(self, a, b):
+        if a == 0 or b == 0:
+            return 0
+        return abs(a * b) // self.mcd(a, b)
+
+    def mcd_multiple(self, *numeros):
+        if not numeros:
+            return None
+        resultado = numeros[0]
+        for n in numeros[1:]:
+            resultado = self.mcd(resultado, n)
+        return resultado
+
+# 5. PRUEBA
+# cm = CalculadoraMcdMcm()
+# mcd(12, 18) -> (18, 12%18=12) -> (12, 18%12=6) -> (6, 12%6=0) -> 6
+# mcm(12, 18) -> (12*18) // 6 = 216 // 6 = 36
+
+
+# ==============================================================================
+# EJERCICIO 17 - CLASIFICADOR DE NOTAS EN LETRAS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Notas numéricas en lote (*notas).
+# PROCESO:
+#   Clasificar: A (>=90), B (>=80), C (>=70), D (>=60), F (<60) y agrupar en diccionario.
+# SALIDA:
+#   Diccionario agrupado y porcentaje de estudiantes por letra.
+# EJEMPLO DE ENTRADA:
+#   cn = ClasificadorNotasLetra()
+#   cn.agrupar(95, 83, 72, 50)
+# SALIDA ESPERADA:
+#   {'A': [95], 'B': [83], 'C': [72], 'D': [], 'F': [50]}
+
+# 2. BOSQUEJO
+#   - self.grupos con las cinco claves inicializadas en listas vacías
+#   - letra(nota): cadena if/elif/else
+#   - agrupar(*notas): reinicia grupos y distribuye
+#   - porcentaje_letra(letra): len(grupo) / total * 100
+
+# 3. PATRÓN
+#   Clasificación por umbrales (rangos) y cálculo de proporciones sobre el total.
+
+# 4. CÓDIGO
+class ClasificadorNotasLetra:
+    def __init__(self):
+        self.grupos = {'A': [], 'B': [], 'C': [], 'D': [], 'F': []}
+
+    def letra(self, nota):
+        if nota >= 90:
+            return 'A'
+        elif nota >= 80:
+            return 'B'
+        elif nota >= 70:
+            return 'C'
+        elif nota >= 60:
+            return 'D'
+        else:
+            return 'F'
+
+    def agrupar(self, *notas):
+        self.grupos = {'A': [], 'B': [], 'C': [], 'D': [], 'F': []}
+        for nota in notas:
+            self.grupos[self.letra(nota)].append(nota)
+        return self.grupos
+
+    def porcentaje_letra(self, letra):
+        total = sum(len(v) for v in self.grupos.values())
+        if total == 0:
+            return 0.0
+        return len(self.grupos.get(letra, [])) / total * 100
+
+# 5. PRUEBA
+# cn = ClasificadorNotasLetra()
+# 95 -> A ; 83 -> B ; 72 -> C ; 50 -> F
+# porcentaje_letra('A') -> 1 / 4 * 100 = 25.0
+
+
+# ==============================================================================
+# EJERCICIO 18 - GESTOR DE RUTAS DE VIAJE
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Ciudad de origen, ciudad de destino y kilómetros.
+# PROCESO:
+#   Guardar cada ruta como tupla (origen, destino, km) en una lista y recorrer para sumar o comparar.
+# SALIDA:
+#   Kilometraje total, ruta más larga y conjunto de ciudades visitadas.
+# EJEMPLO DE ENTRADA:
+#   gr = GestorRutas()
+#   gr.agregar_ruta("Milagro", "Guayaquil", 46)
+#   gr.agregar_ruta("Guayaquil", "Quito", 420)
+#   gr.distancia_total()
+# SALIDA ESPERADA:
+#   466
+
+# 2. BOSQUEJO
+#   - self.rutas = []
+#   - agregar_ruta(origen, destino, km): append de la tupla
+#   - distancia_total(): sum del tercer elemento
+#   - ruta_mas_larga(): max() con key=r[2]
+#   - ciudades_visitadas(): conjunto con orígenes y destinos
+
+# 3. PATRÓN
+#   Lista de tuplas de tres campos con agregación y unificación en conjunto.
+
+# 4. CÓDIGO
+class GestorRutas:
+    def __init__(self):
+        self.rutas = []
+
+    def agregar_ruta(self, origen, destino, km):
+        self.rutas.append((origen, destino, km))
+
+    def distancia_total(self):
+        return sum(r[2] for r in self.rutas)
+
+    def ruta_mas_larga(self):
+        if not self.rutas:
+            return None
+        return max(self.rutas, key=lambda r: r[2])
+
+    def ciudades_visitadas(self):
+        ciudades = set()
+        for origen, destino, km in self.rutas:
+            ciudades.add(origen)
+            ciudades.add(destino)
+        return ciudades
+
+# 5. PRUEBA
+# gr = GestorRutas()
+# rutas -> [("Milagro","Guayaquil",46), ("Guayaquil","Quito",420)]
+# distancia_total() -> 46 + 420 = 466 ; ruta_mas_larga() -> ("Guayaquil","Quito",420)
+
+
+# ==============================================================================
+# EJERCICIO 19 - VALIDADOR DE CORREOS ELECTRÓNICOS
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Direcciones de correo en lote (*correos).
+# PROCESO:
+#   Validar que exista un solo '@', usuario no vacío y un punto válido en el dominio.
+# SALIDA:
+#   Conjunto de correos válidos y diccionario {dominio: cantidad}.
+# EJEMPLO DE ENTRADA:
+#   vc = ValidadorCorreos()
+#   vc.cargar_multiples("ana@unemi.edu.ec", "malcorreo.com", "luis@gmail.com")
+# SALIDA ESPERADA:
+#   {"ana@unemi.edu.ec", "luis@gmail.com"}
+
+# 2. BOSQUEJO
+#   - self.validos = set()
+#   - es_valido(correo): count("@") == 1, split("@"), verificar usuario y dominio
+#   - cargar_multiples(*correos): agrega los válidos al conjunto
+#   - conteo_por_dominio(): acumula con dict.get()
+
+# 3. PATRÓN
+#   Validación estructural de cadenas con split() y conteo agrupado en diccionario.
+
+# 4. CÓDIGO
+class ValidadorCorreos:
+    def __init__(self):
+        self.validos = set()
+
+    def es_valido(self, correo):
+        if correo.count("@") != 1:
+            return False
+        usuario, dominio = correo.split("@")
+        if len(usuario) == 0 or "." not in dominio:
+            return False
+        return not dominio.startswith(".") and not dominio.endswith(".")
+
+    def cargar_multiples(self, *correos):
+        for correo in correos:
+            if self.es_valido(correo):
+                self.validos.add(correo)
+        return self.validos
+
+    def conteo_por_dominio(self):
+        conteo = {}
+        for correo in self.validos:
+            dominio = correo.split("@")[1]
+            conteo[dominio] = conteo.get(dominio, 0) + 1
+        return conteo
+
+# 5. PRUEBA
+# vc = ValidadorCorreos()
+# "ana@unemi.edu.ec" -> un '@', usuario "ana", dominio con punto -> válido
+# "malcorreo.com" -> cero '@' -> descartado
+# conteo_por_dominio() -> {"unemi.edu.ec": 1, "gmail.com": 1}
+
+
+# ==============================================================================
+# EJERCICIO 20 - OPERADOR DE MATRICES
+# ==============================================================================
+# 1. ENTENDER EL PROBLEMA
+# ENTRADA:
+#   Matrices representadas como listas de listas.
+# PROCESO:
+#   Sumar matrices elemento a elemento, transponer filas por columnas y extraer la diagonal.
+# SALIDA:
+#   Matriz resultante (lista de listas) y tupla con la diagonal principal.
+# EJEMPLO DE ENTRADA:
+#   om = OperadorMatrices()
+#   om.sumar([[1, 2], [3, 4]], [[5, 6], [7, 8]])
+# SALIDA ESPERADA:
+#   [[6, 8], [10, 12]]
+
+# 2. BOSQUEJO
+#   - sumar(m1, m2): validar dimensiones y usar comprensión doble por índices
+#   - transpuesta(m): intercambiar índices i y j
+#   - diagonal_principal(m): tupla con m[i][i]
+
+# 3. PATRÓN
+#   Estructuras anidadas (listas de listas) con recorrido por doble índice.
+
+# 4. CÓDIGO
+class OperadorMatrices:
+    def sumar(self, m1, m2):
+        if len(m1) != len(m2):
+            return None
+        return [[m1[i][j] + m2[i][j] for j in range(len(m1[i]))] for i in range(len(m1))]
+
+    def transpuesta(self, matriz):
+        if not matriz:
+            return []
+        return [[matriz[i][j] for i in range(len(matriz))] for j in range(len(matriz[0]))]
+
+    def diagonal_principal(self, matriz):
+        return tuple(matriz[i][i] for i in range(len(matriz)))
+
+# 5. PRUEBA
+# om = OperadorMatrices()
+# [[1,2],[3,4]] + [[5,6],[7,8]] -> 1+5=6, 2+6=8, 3+7=10, 4+8=12 -> [[6,8],[10,12]]
+# diagonal_principal([[1,2],[3,4]]) -> (1, 4)
+
+
+# ==============================================================================
+# SECCIÓN DE PRUEBAS GENERALES DE EJECUCIÓN
+# ==============================================================================
+if __name__ == "__main__":
+    print("--- EJECUTANDO PRUEBAS DE LOS 20 EJERCICIOS ---")
+
+    # Ej 1
+    v = ValidadorContrasenas()
+    print("Ej 1 - Seguras:", v.evaluar_multiples("Python123", "abc", "CLAVE2026"))
+
+    # Ej 2
+    ca = ControlAsistencia()
+    ca.marcar_multiples("Ana", "Luis", "Ana")
+    print("Ej 2 - Únicos:", ca.total_unicos())
+
+    # Ej 3
+    cm_mon = ConversorMonedas()
+    cm_mon.registrar_tasa("EUR", 0.92)
+    print("Ej 3 - Conversión:", cm_mon.convertir(100, "EUR"))
+
+    # Ej 4
+    rv = RegistroVentas()
+    rv.registrar_venta("pan", 10)
+    rv.registrar_venta("pan", 5)
+    rv.registrar_venta("leche", 8)
+    print("Ej 4 - Más vendido:", rv.producto_mas_vendido())
+
+    # Ej 5
+    fp = FiltradorPrimos()
+    print("Ej 5 - Primos:", fp.filtrar_primos(2, 4, 7, 9, 11))
+
+    # Ej 6
+    b = Biblioteca()
+    b.agregar_libro("Rayuela", "Cortázar", 1963)
+    b.agregar_libro("Bestiario", "Cortázar", 1951)
+    print("Ej 6 - Del autor:", b.libros_de_autor("Cortázar"))
+
+    # Ej 7
+    cf = CalculadoraFactorial()
+    print("Ej 7 - Factorial de 5:", cf.factorial(5))
+
+    # Ej 8
+    ap = AnalizadorPalindromos()
+    print("Ej 8 - Palíndromos:", ap.filtrar_palindromos("reconocer", "casa", "anilina"))
+
+    # Ej 9
+    cg = ControlGastos()
+    cg.registrar_gasto("comida", 20)
+    cg.registrar_gasto("transporte", 5)
+    cg.registrar_gasto("comida", 15)
+    print("Ej 9 - Totales:", cg.total_por_categoria())
+
+    # Ej 10
+    gs = GeneradorSiglas()
+    print("Ej 10 - Sigla:", gs.generar_sigla("universidad estatal de milagro"))
+
+    # Ej 11
+    gh = GestorHorario()
+    gh.agregar_clase("lunes", "POO")
+    gh.agregar_clase("lunes", "Base de Datos")
+    gh.agregar_clase("martes", "Economía")
+    print("Ej 11 - Día más cargado:", gh.dia_mas_cargado())
+
+    # Ej 12
+    ct = ConversorTemperatura()
+    print("Ej 12 - 25°C en °F:", ct.celsius_a_fahrenheit(25))
+
+    # Ej 13
+    en = EstadisticasNumericas()
+    en.cargar(4, 1, 7, 3)
+    print("Ej 13 - Mediana:", en.mediana(), "| Rango:", en.rango())
+
+    # Ej 14
+    rm = RegistroMascotas()
+    rm.registrar("Rocky", "perro", 4)
+    rm.registrar("Michi", "gato", 2)
+    print("Ej 14 - Perros:", rm.por_especie("perro"))
+
+    # Ej 15
+    cv = ContadorVocalesPalabra()
+    print("Ej 15 - Mapa vocales:", cv.mapa_vocales("murcielago", "sol"))
+
+    # Ej 16
+    cmm = CalculadoraMcdMcm()
+    print("Ej 16 - MCD:", cmm.mcd(12, 18), "| MCM:", cmm.mcm(12, 18))
+
+    # Ej 17
+    cn = ClasificadorNotasLetra()
+    print("Ej 17 - Grupos:", cn.agrupar(95, 83, 72, 50))
+
+    # Ej 18
+    gr = GestorRutas()
+    gr.agregar_ruta("Milagro", "Guayaquil", 46)
+    gr.agregar_ruta("Guayaquil", "Quito", 420)
+    print("Ej 18 - Distancia total:", gr.distancia_total())
+
+    # Ej 19
+    vc = ValidadorCorreos()
+    vc.cargar_multiples("ana@unemi.edu.ec", "malcorreo.com", "luis@gmail.com")
+    print("Ej 19 - Por dominio:", vc.conteo_por_dominio())
+
+    # Ej 20
+    om = OperadorMatrices()
+    print("Ej 20 - Suma matrices:", om.sumar([[1, 2], [3, 4]], [[5, 6], [7, 8]]))
